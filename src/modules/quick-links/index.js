@@ -1,0 +1,1 @@
+import { createModule } from "../../shared/module.js";\n\nconst pages = [\n  "Favourite Pages",\n  "Shortcuts",\n  "Custom Links",\n];\n\nexport const quickLinks = createModule({ name: "quick-links", pages });\n
