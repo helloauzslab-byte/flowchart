@@ -1,0 +1,1 @@
+import { createModule } from "../../shared/module.js";\n\nconst pages = [\n  "Swiggy",\n  "Zomato",\n  "ONDC",\n  "Dunzo",\n  "Uber Eats",\n  "Platform Settings",\n];\n\nexport const aggregatorCenter = createModule({ name: "aggregator-center", pages });\n
