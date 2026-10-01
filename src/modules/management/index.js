@@ -1,0 +1,1 @@
+import { createModule } from "../../shared/module.js";\n\nconst pages = [\n  "Configuration",\n  "User Management",\n  "User Logs",\n  "Audit Trail",\n  "Data Management",\n  "Device Mapping",\n  "Accounting",\n  "Explore Products",\n];\n\nexport const management = createModule({ name: "management", pages });\n
