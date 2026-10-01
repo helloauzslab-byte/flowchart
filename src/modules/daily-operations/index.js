@@ -1,0 +1,1 @@
+import { createModule } from "../../shared/module.js";\n\nconst pages = [\n  "Live Orders",\n  "All Orders",\n  "Online Orders",\n  "KOT",\n  "Due Payment Settlement",\n];\n\nexport const dailyOperations = createModule({ name: "daily-operations", pages });\n
