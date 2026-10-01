@@ -1,0 +1,1 @@
+import { createModule } from "../../shared/module.js";\n\nconst pages = [\n  "Campaigns",\n  "Offers",\n  "WhatsApp Marketing",\n  "Customer Engagement",\n  "Promotions",\n  "Loyalty Campaigns",\n];\n\nexport const marketing = createModule({ name: "marketing", pages });\n
