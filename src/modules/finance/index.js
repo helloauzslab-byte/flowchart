@@ -1,0 +1,1 @@
+import { createModule } from "../../shared/module.js";\n\nconst pages = [\n  "Expenses",\n  "Withdrawals",\n  "Cash Management",\n  "Settlements",\n  "Accounting",\n  "Payment Reconciliation",\n];\n\nexport const finance = createModule({ name: "finance", pages });\n
