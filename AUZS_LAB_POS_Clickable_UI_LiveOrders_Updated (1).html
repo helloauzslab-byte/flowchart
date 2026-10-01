@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>AUZS LAB POS — Clickable Prototype</title>
+<style>
+:root{
+  --bg:#f6f7f9; --surface:#fff; --surface-2:#f0f2f5; --line:#e5e7eb;
+  --text:#13161b; --muted:#737983; --brand:#1f55ff; --brand-2:#102a72;
+  --green:#1ea672; --red:#dd4d4d; --amber:#d99100; --shadow:0 8px 28px rgba(15,23,42,.06);
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:258px;background:#fbfbfc;border-right:1px solid var(--line);padding:14px 12px;display:flex;flex-direction:column;transition:.25s;width:min(258px,29vw);min-width:228px}
+.brand{display:flex;align-items:center;gap:12px;padding:8px 8px 18px}
+.logo{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#111827,#4b5563);color:#fff;display:grid;place-items:center;font-weight:900;letter-spacing:-2px}
+.brand b{font-size:16px}.brand span{font-size:11px;color:var(--muted);display:block;margin-top:2px}
+.nav{overflow:auto;padding-right:2px}
+.nav-section-title{font-size:11px;color:#9aa0aa;text-transform:uppercase;letter-spacing:.1em;padding:14px 10px 7px}
+.nav-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 11px;border:0;background:transparent;border-radius:11px;color:#454a53;text-align:left;margin:2px 0;position:relative}
+.nav-btn:hover{background:#f0f2f5}
+.nav-btn.active{background:#eaf0ff;color:#1543cc;font-weight:700}
+.nav-btn .ico{width:18px;text-align:center;color:#6d747f}
+.nav-btn.active .ico{color:#1543cc}
+.nav-btn .chev{margin-left:auto;font-size:11px;color:#8e949f}
+.nav-sub{display:none;margin:3px 0 6px 34px;padding-left:10px;border-left:1px solid #e0e3e7}
+.nav-sub.open{display:block}
+.nav-sub button{width:100%;border:0;background:transparent;text-align:left;padding:8px 8px;color:#6c727c;border-radius:8px;font-size:13px}
+.nav-sub button:hover,.nav-sub button.active{background:#f0f2f5;color:#111827}
+.badge{margin-left:auto;background:#eef3ff;color:#3b67de;font-size:10px;padding:2px 6px;border-radius:999px}
+.sidebar-bottom{margin-top:auto;padding-top:12px}
+.help-card{padding:14px;border:1px solid var(--line);background:#fff;border-radius:14px;box-shadow:var(--shadow)}
+.help-card b{font-size:13px}.help-card p{font-size:11px;color:var(--muted);line-height:1.45}.dark-btn{background:#111827;color:#fff;border:0;border-radius:10px;padding:9px 11px;width:100%;font-weight:700}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:70px;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 20px;position:relative;z-index:5}
+.icon-btn{width:38px;height:38px;border:1px solid var(--line);background:#fff;border-radius:11px;display:grid;place-items:center;color:#525862}
+.outlet{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);padding:9px 12px;border-radius:11px;font-weight:700}
+.outlet small{font-weight:500;color:var(--muted)}
+.spacer{flex:1}
+.status{display:flex;align-items:center;gap:7px;font-size:12px;color:#5a6069}
+.dot{width:8px;height:8px;background:var(--green);border-radius:50%}
+.top-actions{display:flex;gap:8px}
+.content{padding:22px;overflow:auto}
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:18px}
+.page-head h1{font-size:24px;margin:0 0 5px;letter-spacing:-.02em}
+.page-head p{margin:0;color:var(--muted);font-size:13px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:650;color:#30353c}
+.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn.ghost{background:#f7f8fa}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(5,minmax(140px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.kpi-label{color:var(--muted);font-size:12px}.kpi-value{font-size:25px;font-weight:800;margin:8px 0}.trend{font-size:11px}.up{color:var(--green)}.down{color:var(--red)}
+.dashboard-grid{grid-template-columns:1.4fr 1fr .9fr}
+.card h3{margin:0 0 12px;font-size:14px}.subtle{color:var(--muted);font-size:12px}
+.chart{height:190px;position:relative;margin-top:10px}
+.chart svg{width:100%;height:100%}
+.channel-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #f0f1f3}.channel-row:last-child{border-bottom:0}
+.pill{font-size:10px;padding:4px 7px;border-radius:999px;background:#f3f5f8;color:#5f6670}
+table{width:100%;border-collapse:collapse}
+th,td{padding:11px 9px;border-bottom:1px solid #eef0f2;text-align:left;font-size:12px}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#848a95}
+tr:hover td{background:#fafbfc}
+.status-pill{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:10px;font-weight:700}
+.s-green{background:#e9f8f1;color:#167853}.s-blue{background:#eaf0ff;color:#1b4bd2}.s-amber{background:#fff5dc;color:#8b6100}.s-red{background:#ffeded;color:#a33434}
+.two-col{grid-template-columns:1.5fr 1fr}
+.three-col{grid-template-columns:repeat(3,1fr)}
+.list-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #edf0f2}.list-item:last-child{border-bottom:0}
+.progress{height:7px;background:#edf0f3;border-radius:999px;overflow:hidden;margin-top:8px}.progress > span{display:block;height:100%;background:var(--brand);border-radius:999px}
+.filterbar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.input,.select{height:38px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 11px;min-width:150px;outline:none}
+.input:focus,.select:focus{border-color:#9db2ff;box-shadow:0 0 0 3px #eaf0ff}
+.empty{padding:38px 15px;text-align:center;color:var(--muted)}
+.empty b{color:var(--text);display:block;margin-bottom:4px}
+.quick-grid{grid-template-columns:repeat(4,minmax(160px,1fr))}
+.quick{padding:14px;border:1px solid var(--line);background:#fff;border-radius:14px;text-align:left}
+.quick b{display:block;margin-bottom:5px}.quick span{font-size:11px;color:var(--muted)}
+.footer-note{font-size:11px;color:#9298a2;padding:18px 0 4px}
+.modal-wrap{display:none;position:fixed;inset:0;background:rgba(17,24,39,.35);z-index:20;align-items:center;justify-content:center;padding:20px}
+.modal-wrap.open{display:flex}
+.modal{width:min(560px,96vw);background:#fff;border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.18);padding:20px}
+.modal-head{display:flex;justify-content:space-between;align-items:center}.modal h2{font-size:18px;margin:0}.close{border:0;background:#f1f3f5;border-radius:9px;width:34px;height:34px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:16px}.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px}.field input,.field select{width:100%;height:40px;border:1px solid var(--line);border-radius:9px;padding:0 10px}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.toast{position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;padding:11px 14px;border-radius:11px;font-size:12px;display:none;z-index:30;box-shadow:0 14px 36px rgba(0,0,0,.22)}
+.toast.show{display:block;animation:fade 2.8s forwards}@keyframes fade{0%,72%{opacity:1}100%{opacity:0}}
+
+/* dashboard override */
+.dash-head{margin-bottom:2px}.sync-strip{display:flex;justify-content:flex-end;gap:10px;align-items:center;color:#66707a;font-size:12px;margin:0 0 14px}.sync-strip span:first-child,.sync-strip span:last-child{color:#56606a}.sync-strip span:first-letter{color:#16804e}.sync-strip i{height:15px;width:1px;background:#e3e5e8}.dash-wrap{display:grid;grid-template-columns:minmax(0,2.05fr) minmax(330px,.92fr);gap:16px;align-items:start}.dash-main,.dash-side{display:flex;flex-direction:column;gap:16px;min-width:0}.sales-card{padding:15px 14px 0}.sales-body{display:grid;grid-template-columns:265px minmax(0,1fr)}.sales-total{background:#f0f2f5;border-radius:14px 0 0 0;padding:18px 15px 10px}.sales-total>b{font-size:14px}.big-money{font-size:43px;font-weight:800;margin:4px 0 16px;letter-spacing:-.03em}.pay-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #dce0e5;color:#515a64}.pay-row>span:last-child{display:flex;gap:16px;align-items:center}.pay-row em{font-style:normal;color:#777f89;font-size:11px}.pay-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px}.p0{background:#4289f5}.p1{background:#1eb777}.p2{background:#ff7815}.p3{background:#6b7178}.online-small{font-size:11px;color:#616a74;padding-top:9px}.sales-visual{padding:18px 14px 0;border-left:1px solid #eceff2}.sales-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#5d6670}.sales-head strong{font-size:18px;color:#111}.sales-tags{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:9px;color:#777f89;font-size:10px}.sales-tags .btn{margin-left:auto;padding:5px 8px}.blank-chart{height:270px;border-bottom:1px solid #e5e8eb;background:linear-gradient(to bottom,transparent 24.5%,#eef0f2 25%,transparent 25.5%,transparent 49.5%,#eef0f2 50%,transparent 50.5%,transparent 74.5%,#eef0f2 75%,transparent 75.5%)}.legend{text-align:center;padding:10px;font-size:11px;color:#626a74}.legend span{margin-left:8px}.lblue{color:#4386f6}.lgreen{color:#1eb777}.lorange{color:#ff7817}.channel-strip{border-top:1px solid #e4e7eb;display:grid;grid-template-columns:repeat(3,1fr)}.channel{position:relative;padding:15px 10px 15px 58px;min-height:135px;border-right:1px solid #e4e7eb}.channel:last-child{border-right:0}.channel-icon{position:absolute;left:10px;top:14px;width:42px;height:42px;border-radius:10px;display:grid;place-items:center}.channel-icon.blue{background:#e7efff}.channel-icon.green{background:#e9faef}.channel-icon.orange{background:#fff0e8}.dots{position:absolute;right:7px;top:10px;border:0;background:transparent;font-size:18px}.channel-value{font-size:24px;font-weight:800;margin-top:22px}.channel-track{height:7px;border-radius:999px;background:#eceef0;margin-top:10px}.online-card,.margin-card{padding:15px}.online-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:30px;border-bottom:1px solid #e6e8eb;padding:4px 0 15px}.big-inline{font-size:24px;font-weight:800;margin:5px 0}.blue-text{color:#1d63d8}.red-text{color:#e94444}.online-card table{margin-top:0}.online-card a{color:#1e66d6;text-decoration:none}.margin-intro h3{margin:0 0 4px;font-size:15px}.margin-intro p{margin:0;color:#6b737d;font-size:12px;line-height:1.4}.margin-stats{display:grid;grid-template-columns:1fr 1fr;margin:14px 0;border-top:1px solid #eceef0;border-bottom:1px solid #eceef0;padding:14px 0}.margin-stats>div{display:flex;flex-direction:column;gap:6px}.margin-stats>div+div{border-left:1px solid #e1e4e8;padding-left:18px}.margin-stats span{color:#646d77;font-size:12px}.margin-stats strong{font-size:23px}.margin-head{display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px}.margin-head span{color:#7c848d}.margin-row{display:grid;grid-template-columns:180px 1fr 78px;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eceef0;font-size:12px}.mbar{display:flex;align-items:center;gap:8px}.mbar i{display:block;height:15px;background:#bad2f5;border-radius:999px}.mbar em{font-style:normal;font-size:11px}.no-recipe{background:#eff1f4;border-radius:999px;padding:6px 8px;text-align:center;font-size:10px;color:#4f5660}.inventory-note{display:flex;justify-content:space-between;align-items:center;gap:14px;background:#f1f2f3;border:1px solid #e0e2e5;border-radius:15px;padding:16px}.inventory-note div{display:flex;flex-direction:column;gap:4px}.inventory-note b{font-size:13px}.inventory-note span{font-size:11px;color:#6e7680}.outline{border-color:#3477ea!important;color:#2066d5!important;background:#fff!important}.bottom-two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.item-card,.expenses-card{min-height:285px;padding:15px}.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid #dae0e6;border-radius:10px;overflow:hidden}.seg button{padding:10px;border:0;background:#fff;color:#555e68}.seg button+button{border-left:1px solid #dae0e6}.seg .active{background:#f3f7ff;color:#1d69db;font-weight:700}.item-empty{padding:58px 20px 24px}.item-empty span{font-size:11px;line-height:1.4}.exp-row{display:flex;justify-content:space-between;margin-top:16px;font-size:12px}.exp-bar{height:7px;border-radius:999px;background:#eceff1;margin-top:8px}.snapshot-card{padding:0;overflow:hidden}.snap-graph{height:145px;position:relative;border-bottom:1px solid #e4e7eb}.snap-graph svg{width:100%;height:100%}.snap-graph>span{position:absolute;left:32px;top:18px;background:#eaf1ff;color:#1767df;padding:5px 13px;border-radius:999px;font-size:12px;font-weight:700}.snap-copy{display:flex;justify-content:space-between;align-items:center;padding:14px 15px}.snap-copy div{display:flex;flex-direction:column;gap:4px}.snap-copy small{font-size:11px;color:#727a84}.trial{border:1px solid #f0bb45;background:#fffaf0;border-radius:15px;padding:17px;color:#74551e}.trial p{font-size:13px;line-height:1.45;margin:0 0 10px}.trial button{border:0;background:none;color:#694b16;font-weight:700;float:right}.attendo{border-radius:15px;border:1px solid #dce8f7;background:#eaf4ff;padding:17px}.promo-logo{font-size:23px;color:#1579e7;font-weight:800;margin-bottom:7px}.attendo>b{font-size:14px}.attendo>p{font-size:11px;color:#626b75;line-height:1.4;margin:4px 0 10px}.sample{display:inline-block;background:white;border:1px solid #e1e5eb;border-radius:999px;padding:5px 8px;font-size:10px;float:right}.bars{height:105px;display:flex;gap:22px;align-items:end;justify-content:center;border-bottom:1px solid #dfe7f1;margin-bottom:10px}.bars i{display:block;width:20px;border-radius:4px 4px 0 0;background:#96baf3}.ticks{font-size:11px;color:#59636f;line-height:1.75;margin-bottom:9px}.attendo button,.risk button,.performance button{width:100%;border:0;background:#1d73e8;color:white;border-radius:10px;padding:10px;font-weight:700}.attendo a{display:block;text-align:center;margin-top:10px;font-size:11px;color:#1d63d7;text-decoration:none}.risk,.performance,.leakage{padding:16px}.risk-title{display:flex;gap:12px;align-items:center;margin:6px 0}.risk-title strong{font-size:28px;color:#13945b}.risk-title span{background:#e7f8ed;color:#118753;border-radius:999px;font-size:11px;padding:5px 8px;font-weight:700}.risk p{font-size:11px;color:#626b75;line-height:1.4}.risk-box{border:1px solid #e2e6eb;border-radius:11px;padding:11px;display:flex;flex-direction:column;gap:7px;margin-top:10px}.risk-box>b{font-size:13px}.risk-box>span{font-size:11px;color:#6c747e}.risk-box>div{border:1px solid #e2e6eb;border-radius:8px;padding:8px;font-size:11px;color:#626a74}.risk-box.kh{background:#eef6ff;border-color:#dfeafa}.kh-grid{display:grid!important;grid-template-columns:1fr 1fr;gap:7px}.kh-grid span{background:#fff;border-radius:8px;padding:8px;font-size:10px!important;color:#616a74}.performance small{display:block;color:#767e88;font-weight:400;margin-top:2px}.red-box{background:#fff0f0;border-radius:11px;padding:12px;margin:9px 0 12px;display:flex;flex-direction:column;gap:4px}.red-box b{color:#c63e3e;font-size:12px}.red-box span{font-size:10px;color:#656d77;line-height:1.4}.wa{text-align:center;font-size:11px;color:#737b85;margin-top:9px}.wa a{color:#177443;font-weight:700}.mini-title{display:block;font-size:11px;margin:10px 0 3px}.leak-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #ebedef;font-size:12px}.quick-help{border:1px solid #e1e4e8;background:#fff;border-radius:15px;padding:14px}.qh-head{display:flex;justify-content:space-between;font-size:11px;margin-bottom:12px}.qh-head span{color:#7b838d}.quick-help>b{display:block;font-size:12px}.quick-help>small{display:block;color:#777f89;font-size:10px;margin-top:3px}.quick-help>button{width:100%;margin-top:12px;padding:8px;border:1px solid #dfe4e9;border-radius:10px;background:#fff;color:#3e6fb3}.ai-help{position:fixed;right:20px;bottom:17px;display:flex;align-items:center;gap:9px;z-index:20}.ai-help span{background:#edf5ff;border:1px solid #d6e6ff;color:#1f68d9;border-radius:999px;padding:8px 12px;font-size:11px;box-shadow:0 8px 24px rgba(28,102,217,.12)}.ai-help button{border:0;background:#087ff1;color:#fff;border-radius:999px;padding:13px 18px;font-weight:800;box-shadow:0 9px 28px rgba(8,127,241,.25)}
+@media(max-width:1050px){.dash-wrap{grid-template-columns:1fr}.dash-side{display:grid;grid-template-columns:1fr 1fr}.sales-body{grid-template-columns:230px 1fr}.bottom-two{grid-template-columns:1fr}.margin-row{grid-template-columns:150px 1fr 70px}}
+@media(max-width:700px){.dash-side{display:flex}.sales-body{grid-template-columns:1fr}.sales-visual{border-left:0;border-top:1px solid #eceff2}.sales-total{border-radius:14px 14px 0 0}.channel-strip{grid-template-columns:1fr}.channel{border-right:0;border-bottom:1px solid #e4e7eb}.online-summary{grid-template-columns:1fr}.margin-row{grid-template-columns:1fr}.inventory-note{flex-direction:column;align-items:flex-start}.ai-help span{display:none}}
+
+@media(max-width:1000px){.sidebar{width:220px;min-width:220px}.kpis{grid-template-columns:repeat(3,1fr)}.dashboard-grid,.two-col{grid-template-columns:1fr}.quick-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.sidebar{position:fixed;left:-270px;top:0;bottom:0;z-index:10;box-shadow:12px 0 40px rgba(0,0,0,.12)}.sidebar.mobile-open{left:0}.content{padding:14px}.kpis{grid-template-columns:repeat(2,1fr)}.three-col{grid-template-columns:1fr}.topbar{padding:0 12px}.status{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="logo">A</div>
+      <div><b>AUZS LAB</b><span>POS Control Center</span></div>
+    </div>
+    <div class="nav" id="nav"></div>
+    <div class="sidebar-bottom">
+      <div class="help-card">
+        <b>AUZS Pro</b>
+        <p>Unlock advanced reports, automation and integrations.</p>
+        <button class="dark-btn" onclick="toast('Upgrade flow opened')">View plans</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn" title="Toggle sidebar" onclick="toggleSidebar()">☰</button>
+      <button class="outlet" onclick="openModal('outletModal')">▣ <span>Mannat Cafe</span> <small>⌄</small></button>
+      <span class="pill">OPEN</span>
+      <div class="status"><span class="dot"></span> POS connected</div>
+      <div class="spacer"></div>
+      <div class="top-actions">
+        <button class="icon-btn" title="Device Mapping" onclick="go('management','Device Mapping')">◫</button>
+        <button class="icon-btn" title="Notifications" onclick="toast('No new notifications')">♧</button>
+        <button class="icon-btn" title="Settings" onclick="go('management','Configuration')">⚙</button>
+        <button class="btn primary" onclick="toast('App marketplace opened')">✦ Discover Apps</button>
+      </div>
+    </header>
+
+    <section class="content" id="content"></section>
+  </main>
+</div>
+
+<div class="modal-wrap" id="modal">
+  <div class="modal">
+    <div class="modal-head"><h2 id="modalTitle">Create</h2><button class="close" onclick="closeModal()">×</button></div>
+    <div id="modalBody"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="closeModal();toast('Saved successfully')">Save</button>
+    </div>
+  </div>
+</div>
+<div class="modal-wrap" id="outletModal">
+  <div class="modal">
+    <div class="modal-head"><h2>Select outlet</h2><button class="close" onclick="document.getElementById('outletModal').classList.remove('open')">×</button></div>
+    <div class="list-item"><div><b>Mannat Cafe</b><div class="subtle">Main outlet</div></div><span class="status-pill s-green">Open</span></div>
+    <div class="list-item"><div><b>AUZS Demo Store</b><div class="subtle">Demo outlet</div></div><span class="status-pill s-blue">Select</span></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const navData = [
+  {id:'dashboard',label:'Dashboard',icon:'⌂'},
+  {id:'daily',label:'Daily Operations',icon:'◴',children:[
+    ['live','Live Orders'],['all','All Orders'],['online','Online Orders'],['kot','KOT'],['due','Due Payment']
+  ]},
+  {id:'menu',label:'Menu Management',icon:'☷',children:[
+    ['menu','Menu & Discounts'],['items','Items'],['categories','Categories'],['variants','Variants'],['addons','Add-ons'],
+    ['tables','Tables & Areas'],['taxes','Taxes'],['discounts','Discounts'],['menuon','Menu Availability'],
+    ['preferences','Order Preferences'],['commission','Item Commission'],['physical','Physical Menu'],['images','Bulk Image Upload']
+  ]},
+  {id:'inventory',label:'Inventory',icon:'▤',children:[
+    ['raw','Raw Materials'],['stock','Stock Management'],['purchase','Purchase Orders'],['vendors','Vendors'],['recipes','Recipes'],['consumption','Consumption Tracking'],['invreports','Inventory Reports']
+  ]},
+  {id:'marketing',label:'Marketing Automation',icon:'✦',badge:'New',children:[
+    ['campaigns','Campaigns'],['offers','Offers'],['whatsapp','WhatsApp Marketing'],['engagement','Customer Engagement'],['promotions','Promotions'],['loyaltycamp','Loyalty Campaigns']
+  ]},
+  {id:'finance',label:'Finance',icon:'₹',children:[
+    ['expenses','Expenses'],['withdrawals','Withdrawals'],['cash','Cash Management'],['settlements','Settlements'],['accounting','Accounting'],['reconcile','Payment Reconciliation']
+  ]},
+  {id:'reports',label:'Reports',icon:'▥',children:[
+    ['salesreports','Sales Reports'],['orderreports','Order Reports'],['itemreports','Item Reports'],['invr','Inventory Reports'],['customerreports','Customer Reports'],['staffreports','Staff Reports'],['analytics','Analytics Dashboard']
+  ]},
+  {id:'management',label:'Management',icon:'⚙',children:[
+    ['configuration','Configuration'],['users','User Management'],['logs','User Logs'],['audit','Audit Trail'],['data','Data Management'],['devices','Device Mapping'],['macct','Accounting'],['apps','Explore Products']
+  ]},
+  {id:'crm',label:'CRM',icon:'♙',children:[
+    ['customers','Customers'],['database','Customer Database'],['loyalty','Loyalty Program'],['giftcards','Gift Cards'],['cengage','Customer Engagement'],['membership','Membership Programs']
+  ]},
+  {id:'aggregator',label:'Aggregator Center',icon:'↗',children:[
+    ['swiggy','Swiggy'],['zomato','Zomato'],['ondc','ONDC'],['dunzo','Dunzo'],['ubereats','Uber Eats'],['aggsettings','Platform Settings']
+  ]},
+  {id:'quick',label:'Quick Links',icon:'☆',children:[
+    ['favorite','Favourite Pages'],['shortcuts','Shortcuts'],['customlinks','Custom Links']
+  ]}
+];
+
+function renderNav(){
+  const nav=document.getElementById('nav'); nav.innerHTML='';
+  navData.forEach(item=>{
+    if(!item.children){
+      nav.innerHTML += `<button class="nav-btn" data-id="${item.id}" onclick="go('${item.id}')"><span class="ico">${item.icon}</span><span>${item.label}</span></button>`;
+      return;
+    }
+    nav.innerHTML += `<button class="nav-btn parent" data-id="${item.id}" onclick="toggleParent('${item.id}')"><span class="ico">${item.icon}</span><span>${item.label}</span>${item.badge?`<span class="badge">${item.badge}</span>`:''}<span class="chev" id="chev-${item.id}">›</span></button>`;
+    nav.innerHTML += `<div class="nav-sub" id="sub-${item.id}">${item.children.map(ch=>`<button data-page="${ch[0]}" onclick="go('${item.id}','${ch[0]}')">${ch[1]}</button>`).join('')}</div>`;
+  });
+}
+function toggleParent(id){
+  const sub=document.getElementById('sub-'+id); const open=sub.classList.toggle('open');
+  document.getElementById('chev-'+id).textContent=open?'⌄':'›';
+}
+function setActive(id,sub){
+  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-sub button').forEach(x=>x.classList.remove('active'));
+  const parent=document.querySelector(`.nav-btn[data-id="${id}"]`); if(parent) parent.classList.add('active');
+  if(sub){
+    const s=document.getElementById('sub-'+id); if(s&&!s.classList.contains('open')){s.classList.add('open'); document.getElementById('chev-'+id).textContent='⌄'}
+    const btn=document.querySelector(`.nav-sub button[data-page="${sub}"]`); if(btn) btn.classList.add('active');
+  }
+}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('mobile-open')}
+function money(n){return '₹ '+Number(n).toLocaleString('en-IN')}
+function row(title,val,sub=''){return `<div class="list-item"><div><b>${title}</b><div class="subtle">${sub}</div></div><strong>${val}</strong></div>`}
+function renderDashboard(){
+return `
+<div class="page-head dash-head"><div><h1>Dashboard</h1></div><div class="actions"><button class="btn">1st Oct ▣</button><button class="icon-btn" onclick="toast('Dashboard refreshed')">↻</button></div></div>
+<div class="sync-strip"><span>● POS synced ago</span><i></i><span>● Orders synced ago</span></div>
+
+<div class="dash-wrap">
+<main class="dash-main">
+  <section class="card sales-card">
+    <div class="section-head"><h3>Sales Statistics</h3><div class="actions"><button class="btn">1st Oct ▣</button><button class="icon-btn" onclick="toast('Sales refreshed')">↻</button></div></div>
+    <div class="sales-body">
+      <div class="sales-total">
+        <b>Total Sales</b><div class="subtle">1st Oct · 0 order</div><div class="big-money">₹ 0</div>
+        ${[['Cash','₹ 0','0.0%'],['Card','₹ 0','0.0%'],['Other','₹ 0','0.0%'],['Not paid','₹ 0','0.0%']].map((x,i)=>`<div class="pay-row"><span><i class="pay-dot p${i}"></i>${x[0]}</span><span><b>${x[1]}</b><em>${x[2]}</em></span></div>`).join('')}
+        <div class="online-small">— &nbsp; Online — ₹ 0 this period</div>
+      </div>
+      <div class="sales-visual">
+        <div class="sales-head"><div><b>Sales</b><div class="subtle">Daily · stacked by channel</div></div><div>Total orders&nbsp; <strong>0</strong></div></div>
+        <div class="sales-tags"><span>● 0 Successful</span><span>● 0 Complementary</span><span>● 0 Cancelled</span><button class="btn">▥ Column⌄</button></div>
+        <div class="blank-chart"></div>
+        <div class="legend"><span class="lblue">●</span> Dine In <span class="lgreen">●</span> Pick Up <span class="lorange">●</span> Delivery</div>
+      </div>
+    </div>
+    <div class="channel-strip">
+      ${[['🍽','Dine In','blue'],['▣','Pick Up','green'],['🛵','Delivery','orange']].map(x=>`<div class="channel"><span class="channel-icon ${x[2]}">${x[0]}</span><b>${x[1]}</b><button class="dots" onclick="toast('${x[1]} options')">⋮</button><div class="channel-value">₹ 0</div><div class="subtle">0 Order · 0%</div><div class="channel-track"></div></div>`).join('')}
+    </div>
+  </section>
+
+  <section class="card online-card"><div class="section-head"><h3>Online orders</h3><button class="btn">1st Oct ▣</button></div>
+    <div class="online-summary"><div><b>Online orders</b><div class="big-inline">₹ 0</div><div class="subtle">0 orders</div></div><div><b class="blue-text">● Prepaid</b><div>₹ 0</div><div class="subtle">0 orders · settled by aggregator</div></div><div><b class="red-text">● COD</b><div>₹ 0</div><div class="subtle">0 orders · cash to collect</div></div></div>
+    <table><thead><tr><th>Platform</th><th>Orders</th><th>Prepaid Orders</th><th>COD Orders</th><th>Revenue</th></tr></thead><tbody><tr><td>••• &nbsp; Other &nbsp; <a href="#" onclick="event.preventDefault();toast('Brands opened')">0 brands ↗</a></td><td>0</td><td>—</td><td>—</td><td>₹ 0</td></tr><tr><td><b>Total</b></td><td>0</td><td>₹ 0</td><td>₹ 0</td><td>₹ 0</td></tr></tbody></table>
+  </section>
+
+  <section class="card margin-card"><div class="margin-intro"><h3>You're earning less on these items.</h3><p>These items are worth a price or recipe review — similar restaurants in your city keep more margin on them.</p></div>
+    <div class="margin-stats"><div><span>● &nbsp;City benchmark average</span><strong>77.14%</strong></div><div><span>● &nbsp;Your average</span><strong>0%</strong></div></div>
+    <div class="margin-head"><b>Top 5 Margin Differences vs. City Benchmark</b><span>Difference in Average</span></div>
+    ${[['Chilli Potato','83.9%'],['Honey Chilli Potato','82.96%'],['White Sauce Pasta','80.33%'],['Red Sauce Pasta','70.01%'],['Schezwan Noodles','68.51%']].map(x=>`<div class="margin-row"><span>${x[0]}</span><div class="mbar"><i style="width:${parseFloat(x[1])}%"></i><em>${x[1]}</em></div><b class="no-recipe">No Recipe</b></div>`).join('')}
+  </section>
+
+  <section class="inventory-note"><div><b>Turn on inventory to see your actual food cost</b><span>Track recipes and stock to compare your real cost with the city benchmark on every item.</span></div><button class="btn outline" onclick="go('inventory','stock')">Guide Me How To Use</button></section>
+
+  <div class="bottom-two">
+    <section class="card item-card"><div class="section-head"><h3>Item Performance</h3><button class="btn">1st Oct ▣</button></div><div class="seg"><button class="active">↗ Top Performing</button><button>⌁ Low Performing</button></div><div class="empty item-empty"><b>No Data Found</b><span>Note : For more information, please check the Customer tab in Marketing Automation.</span></div></section>
+    <section class="card expenses-card"><div class="section-head"><h3>Expenses & Withdrawals</h3><button class="btn">1st Oct ▣</button></div><div class="big-inline">₹ 0</div><div class="subtle">Total outflow</div>${[['Expenses','₹ 0'],['Withdrawals','₹ 0'],['Cash Top Up','₹ 0']].map(x=>`<div class="exp-row"><span>${x[0]} ↗</span><b>${x[1]}</b></div><div class="exp-bar"></div>`).join('')}</section>
+  </div>
+</main>
+
+<aside class="dash-side">
+  <section class="card snapshot-card"><div class="snap-graph"><svg viewBox="0 0 380 130" preserveAspectRatio="none"><defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#78aaff" stop-opacity=".65"/><stop offset="1" stop-color="#dfeaff" stop-opacity=".15"/></linearGradient></defs><path d="M0 82 C60 52 90 38 145 55 C200 72 240 62 285 44 C330 27 352 16 380 9 L380 130 L0 130Z" fill="url(#sg)"/><path d="M0 82 C60 52 90 38 145 55 C200 72 240 62 285 44 C330 27 352 16 380 9" fill="none" stroke="#2172ee" stroke-width="3"/><circle cx="91" cy="37" r="6" fill="#2172ee"/></svg><span>XXXX</span></div><div class="snap-copy"><div><b>Daily Snapshot</b><small>30th September, 2026</small></div><button class="btn outline" onclick="toast('Daily snapshot opened')">Ready To View</button></div></section>
+
+  <section class="trial"><p>You are using AUZS LAB Platform on Trial Version.<br/>Please proceed to buy Platform charges to get uninterrupted usage of the platform.</p><button onclick="toast('Payment flow opened')">Proceed With Payment →</button></section>
+
+  <section class="promo attendo"><div class="promo-logo">Attendo</div><b>Know exactly what your staff costs — every day</b><p>Right beside your Billing sales. You're already halfway there.</p><span class="sample">▱ Sample Data</span><div class="bars">${[48,67,34,55,46].map(h=>`<i style="height:${h}px"></i>`).join('')}</div><div class="ticks">✓ Spot the days staff ate into your margin<br/>✓ Catch overtime you didn't need to pay<br/>✓ Know each shift started on time for the rush</div><button onclick="toast('Attendo opened')">Know More ↗</button><a href="#" onclick="event.preventDefault();toast('Sample report opened')">See Sample Report</a></section>
+
+  <section class="card risk"><div class="section-head"><h3>Risk Radar <span class="pill">Last 30 Days</span></h3><span class="pager">‹ &nbsp;1 / 3&nbsp; ›</span></div><div class="risk-title"><strong>₹0</strong><span>No Risk Exposure Detected</span></div><p>Nothing unverified across payments, expenses or counter approvals.</p><div class="risk-box"><b>▣ Integrate EDC & UPI Partners</b><span>Every collection reconciled on its own.</span><div>⟳ Automatic reconciliation</div><div>▤ Exact provider charges upfront</div></div><div class="risk-box kh"><b>▱ KharchaPay</b><span>Smart UPI wallets for <strong>restaurant expenses</strong></span><div class="kh-grid"><span>✓ Easy approvals & balance load</span><span>⌁ Tracking of every expense</span></div></div><button onclick="toast('Risk Analysis opened')">Explore Risk Analysis ↗</button></section>
+
+  <section class="card performance"><div class="section-head"><h3>Sales Performance <small>September 2026</small></h3><span class="pager">‹ &nbsp;1 / 2&nbsp; ›</span></div><div class="big-inline">₹ 0</div><div class="red-box"><b>⬇ Below industry benchmark</b><span>Industry average is ₹6,31,737. You are ₹6,31,737 (100.0%) below the benchmark.</span></div><button onclick="toast('Marketing Manager opened')">Explore Marketing Manager ↗</button><div class="wa">Or contact us on <a href="#" onclick="event.preventDefault();toast('WhatsApp opened')">WhatsApp</a></div></section>
+
+  <section class="card leakage"><div class="section-head"><h3>Revenue Leakage</h3><button class="btn">1st Oct ▣</button></div><b class="mini-title">KOTS</b>${[['Cancelled','0'],['Modified','0'],['Shifted','0']].map(x=>`<div class="leak-row"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('')}<b class="mini-title">BILLS</b>${[['Modified','0'],['Re-printed','0'],['Waived off','₹ 0']].map(x=>`<div class="leak-row"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('')}</section>
+
+  <section class="quick-help"><div class="qh-head"><b>Quick Help</b><span>Outlet ID · 465060</span></div><b>Krupaben Prajapati</b><small>Point of Contact · 10 AM — 7 PM</small><button onclick="toast('WhatsApp contact opened')">☘ Contact On WhatsApp<br/><small>+91 90333471976</small></button></section>
+</aside>
+</div>
+<div class="ai-help"><span>Ask me about sales or reports. ✨</span><button onclick="toast('AI Agent opened')">✦ AI Agent</button></div>`;
+}
+const pageTitles = {
+daily:{live:'Live Orders',all:'All Orders',online:'Online Orders',kot:'Kitchen Tickets',due:'Due Payment'},
+menu:{menu:'Menu & Discounts',items:'Items',categories:'Categories',variants:'Variants',addons:'Add-ons',tables:'Tables & Areas',taxes:'Taxes',discounts:'Discounts',menuon:'Menu Availability',preferences:'Order Preferences',commission:'Item Commission',physical:'Physical Menu',images:'Bulk Image Upload'},
+inventory:{raw:'Raw Materials',stock:'Stock Management',purchase:'Purchase Orders',vendors:'Vendors',recipes:'Recipes',consumption:'Consumption Tracking',invreports:'Inventory Reports'},
+marketing:{campaigns:'Campaigns',offers:'Offers',whatsapp:'WhatsApp Marketing',engagement:'Customer Engagement',promotions:'Promotions',loyaltycamp:'Loyalty Campaigns'},
+finance:{expenses:'Expenses',withdrawals:'Withdrawals',cash:'Cash Management',settlements:'Settlements',accounting:'Accounting',reconcile:'Payment Reconciliation'},
+reports:{salesreports:'Sales Reports',orderreports:'Order Reports',itemreports:'Item Reports',invr:'Inventory Reports',customerreports:'Customer Reports',staffreports:'Staff Reports',analytics:'Analytics Dashboard'},
+management:{configuration:'Configuration',users:'User Management',logs:'User Logs',audit:'Audit Trail',data:'Data Management',devices:'Device Mapping',macct:'Accounting',apps:'Explore Products'},
+crm:{customers:'Customers',database:'Customer Database',loyalty:'Loyalty Program',giftcards:'Gift Cards',cengage:'Customer Engagement',membership:'Membership Programs'},
+aggregator:{swiggy:'Swiggy',zomato:'Zomato',ondc:'ONDC',dunzo:'Dunzo',ubereats:'Uber Eats',aggsettings:'Platform Settings'},
+quick:{favorite:'Favourite Pages',shortcuts:'Shortcuts',customlinks:'Custom Links'}
+};
+
+
+function renderLiveOrders(tab='orders'){
+  const activeOrders = tab==='orders';
+  return `
+    <div class="page-head live-orders-head">
+      <div>
+        <h1>Live Orders</h1>
+        <div class="live-tabs">
+          <button class="${activeOrders?'active':''}" onclick="go('daily','live','orders')">Running Orders</button>
+          <button class="${!activeOrders?'active':''}" onclick="go('daily','live','tables')">Running Tables</button>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="toast('Live Orders refreshed')">↻ &nbsp; Refresh</button>
+      </div>
+    </div>
+
+    ${activeOrders ? `
+    <div class="live-order-grid">
+      <section class="card live-panel">
+        <div class="live-panel-title"><span class="live-title-dot"></span><h3>Running Orders</h3></div>
+        <div class="live-summary-grid">
+          <div class="live-summary"><span>Total Order</span><strong>0</strong></div>
+          <div class="live-summary"><span>Total Amount</span><strong>₹ 0.00</strong></div>
+        </div>
+        <div class="live-channel-list">
+          <div class="live-channel-row"><div class="live-type-icon">🍴</div><div><b>Dine in</b><small>0 orders</small></div><strong>₹ 0.00</strong></div>
+          <div class="live-channel-row"><div class="live-type-icon">▣</div><div><b>Pick up</b><small>0 orders</small></div><strong>₹ 0.00</strong></div>
+          <div class="live-channel-row"><div class="live-type-icon">▱</div><div><b>Delivery</b><small>0 orders</small></div><strong>₹ 0.00</strong></div>
+        </div>
+      </section>
+
+      <section class="card live-panel">
+        <div class="live-panel-title"><span class="live-title-dot"></span><h3>Pending Orders</h3></div>
+        <div class="live-summary-grid">
+          <div class="live-summary"><span>Total Orders</span><strong>0</strong></div>
+          <div class="live-summary"><span>Total Amount</span><strong>₹ 0.00</strong></div>
+        </div>
+        <div class="live-channel-list">
+          <div class="live-channel-row"><div class="live-type-icon">♨</div><div><b>In Preparation</b><small>0 orders</small></div><strong>₹ 0.00</strong></div>
+          <div class="live-channel-row"><div class="live-type-icon">▣</div><div><b>Waiting For Pickup</b><small>0 orders</small></div><strong>₹ 0.00</strong></div>
+          <div class="live-channel-row"><div class="live-type-icon">▱</div><div><b>Out For Delivery</b><small>0 orders</small></div><strong>₹ 0.00</strong></div>
+        </div>
+      </section>
+    </div>
+    ` : `
+    <div class="running-tables-wrap">
+      <div class="running-table-kpis">
+        <div class="card table-kpi"><div class="table-kpi-icon">⌁</div><div><strong>0</strong><span>Active Tables</span></div></div>
+        <div class="card table-kpi"><div class="table-kpi-icon">⌁</div><div><strong>₹ 0</strong><span>Revenue (Estimated)</span></div></div>
+      </div>
+      <div class="table-empty">
+        <div class="empty-table-icon">⌁</div>
+        <h3>No active tables</h3>
+        <p>Tables will appear here when orders start.</p>
+      </div>
+    </div>
+    `}
+    <div class="live-ai"><div class="ai-help"><span>Ask me about sales or reports. ✨</span><button onclick="toast('AI Agent opened')">✦ AI Agent</button></div></div>
+  `;
+}
+
+function genericPage(id,sub){
+ const title=pageTitles[id]?.[sub] || navData.find(x=>x.id===id)?.label || 'Workspace';
+ const addLabel=(id==='daily'&&sub==='live')?'New Order':(id==='menu'&&sub==='items')?'Add Item':(id==='inventory'&&sub==='purchase')?'New Purchase':(id==='crm'&&sub==='customers')?'Add Customer':'Add New';
+ let tableType = (id==='daily')?'orders':(id==='crm')?'customers':(id==='inventory')?'inventory':(id==='finance')?'finance':(id==='reports')?'reports':'default';
+ return `
+ <div class="page-head"><div><h1>${title}</h1><p>${descriptionFor(id,sub)}</p></div><div class="actions"><button class="btn" onclick="toast('Export started')">Export</button><button class="btn primary" onclick="openCreate('${title}', '${addLabel}')">${addLabel}</button></div></div>
+ <div class="filterbar"><input class="input" placeholder="Search ${title.toLowerCase()}..." oninput="filterTable(this.value)"><select class="select"><option>All statuses</option><option>Active</option><option>Completed</option><option>Pending</option></select><button class="btn" onclick="toast('Filters applied')">Filter</button></div>
+ <div class="card"><table id="dataTable">${tableFor(tableType,sub)}</table></div>
+ <div class="footer-note">Prototype data • Click navigation, tabs, filters and action buttons to explore the AUZS LAB POS concept.</div>`;
+}
+function descriptionFor(id,sub){
+ const m={live:'Handle active dine-in, takeaway and delivery tickets in real time.',all:'Search, review and manage the complete order history.',online:'Monitor orders flowing from connected ordering platforms.',kot:'Track kitchen tickets from creation through completion.',due:'Collect and reconcile outstanding customer payments.',
+items:'Manage products, pricing, recipes and availability.',categories:'Organize menu items into customer-facing categories.',variants:'Manage size or option variants for products.',addons:'Manage optional add-ons and modifiers.',tables:'Configure floors, areas and table layouts.',taxes:'Configure tax rules and applicability.',discounts:'Create and manage promotional discounts.',menuon:'Control item availability by time, channel or outlet.',preferences:'Define ordering and fulfillment rules.',commission:'Manage item-level commission settings.',physical:'Prepare and manage printable/physical menus.',images:'Upload item images in bulk.',
+raw:'Manage raw materials used by recipes and production.',stock:'Monitor stock levels, movements and adjustments.',purchase:'Create and track purchase orders from suppliers.',vendors:'Manage supplier records and contact details.',recipes:'Define recipes and ingredient consumption.',consumption:'Track actual versus theoretical material usage.',invreports:'Review inventory and cost reports.',
+campaigns:'Create targeted marketing campaigns for customers.',offers:'Build offers, coupons and promotional incentives.',whatsapp:'Reach customers through WhatsApp campaigns.',engagement:'Track customer engagement and responses.',promotions:'Manage active promotional programs.',loyaltycamp:'Create loyalty-focused marketing campaigns.',
+expenses:'Record and review operating expenses.',withdrawals:'Track cash withdrawals from the outlet.',cash:'Monitor cash drawer activity and adjustments.',settlements:'Review settlement batches and payout status.',accounting:'Manage core accounting records.',reconcile:'Match gateway and platform payments against orders.',
+salesreports:'Analyze revenue, orders, channels and payment performance.',orderreports:'Review order volume, status and fulfillment metrics.',itemreports:'Analyze item sales and contribution.',invr:'Review stock and inventory performance.',customerreports:'Analyze customer purchase behavior.',staffreports:'Review staff activity and performance.',analytics:'Explore aggregated business intelligence.',
+configuration:'Configure outlet-level operating rules and defaults.',users:'Manage employees, roles and permissions.',logs:'Review sign-ins and system access activity.',audit:'Review important business actions and changes.',data:'Import, export and maintain business data.',devices:'Map POS, printer and kitchen devices.',macct:'Manage management-level accounting settings.',apps:'Browse available AUZS LAB integrations and extensions.',
+customers:'Manage customer profiles, visits and history.',database:'Search the complete customer database.',loyalty:'Manage points, tiers and rewards.',giftcards:'Create, issue and track gift cards.',cengage:'Review engagement activity and customer touchpoints.',membership:'Manage membership plans and benefits.',
+swiggy:'Monitor and configure Swiggy integration.',zomato:'Monitor and configure Zomato integration.',ondc:'Monitor and configure ONDC integration.',dunzo:'Manage Dunzo order connectivity.',ubereats:'Manage Uber Eats order connectivity.',aggsettings:'Configure connected platform settings.',
+favorite:'Open frequently used pages quickly.',shortcuts:'Configure keyboard and workflow shortcuts.',customlinks:'Save links to frequently used external resources.'};
+ return m[sub]||'Manage this part of your AUZS LAB POS workspace.';
+}
+function tableFor(type,sub){
+ if(type==='orders') return `<thead><tr><th>Order</th><th>Channel</th><th>Customer</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody>${[['#1048','Dine-In','Walk-in','₹ 1,240','Preparing'],['#1047','Takeaway','Rahul','₹ 680','Ready'],['#1046','Delivery','Priya','₹ 920','Completed'],['#1045','Online','Guest','₹ 540','Pending']].map(r=>`<tr>${r.slice(0,4).map(c=>`<td>${c}</td>`).join('')}<td><span class="status-pill ${r[4]==='Completed'?'s-green':r[4]==='Pending'?'s-amber':'s-blue'}">${r[4]}</span></td><td><button class="btn" style="padding:5px 8px" onclick="toast('Opened ${r[0]}')">View</button></td></tr>`).join('')}</tbody>`;
+ if(type==='customers') return `<thead><tr><th>Name</th><th>Phone</th><th>Visits</th><th>Spend</th><th>Loyalty</th><th></th></tr></thead><tbody>${[['Rahul Sharma','98xxxxxx21','12','₹ 8,420','Gold'],['Priya Jain','97xxxxxx31','8','₹ 4,980','Silver'],['Aman Khan','99xxxxxx87','5','₹ 2,760','Bronze']].map(r=>`<tr>${r.map((c,i)=>`<td>${i===4?`<span class="status-pill s-blue">${c}</span>`:c}</td>`).join('')}<td><button class="btn" style="padding:5px 8px" onclick="toast('Customer profile opened')">Open</button></td></tr>`).join('')}</tbody>`;
+ if(type==='inventory') return `<thead><tr><th>Item</th><th>Unit</th><th>On Hand</th><th>Reorder Level</th><th>Status</th><th></th></tr></thead><tbody>${[['Milk','L','38','20','Healthy'],['Paneer','Kg','12','15','Reorder'],['Coffee Beans','Kg','7','5','Healthy'],['Potato','Kg','42','30','Healthy']].map(r=>`<tr>${r.slice(0,4).map(c=>`<td>${c}</td>`).join('')}<td><span class="status-pill ${r[4]==='Healthy'?'s-green':'s-amber'}">${r[4]}</span></td><td><button class="btn" style="padding:5px 8px" onclick="toast('Item opened')">Open</button></td></tr>`).join('')}</tbody>`;
+ if(type==='finance') return `<thead><tr><th>Entry</th><th>Category</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead><tbody>${[['Rent','Fixed Cost','01 Oct 2026','₹ 15,000','Posted'],['Cash withdrawal','Cash','01 Oct 2026','₹ 2,000','Posted'],['Supplier payment','Inventory','30 Sep 2026','₹ 6,500','Pending']].map(r=>`<tr>${r.slice(0,4).map(c=>`<td>${c}</td>`).join('')}<td><span class="status-pill ${r[4]==='Posted'?'s-green':'s-amber'}">${r[4]}</span></td></tr>`).join('')}</tbody>`;
+ if(type==='reports') return `<thead><tr><th>Report</th><th>Period</th><th>Generated</th><th>Action</th></tr></thead><tbody>${[['Daily Sales','Today','Ready'],['Channel Mix','Today','Ready'],['Item Performance','This Month','Ready'],['Customer Growth','This Month','Ready']].map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td><span class="status-pill s-green">${r[2]}</span></td><td><button class="btn" style="padding:5px 8px" onclick="toast('Report opened')">View</button></td></tr>`).join('')}</tbody>`;
+ return `<thead><tr><th>Name</th><th>Owner</th><th>Updated</th><th>Status</th><th></th></tr></thead><tbody>${[['Primary record','Manager','Today','Active'],['Secondary record','Admin','Yesterday','Active'],['Archived record','Admin','28 Sep 2026','Archived']].map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status-pill ${r[3]==='Active'?'s-green':'s-amber'}">${r[3]}</span></td><td><button class="btn" style="padding:5px 8px" onclick="toast('Opened')">Open</button></td></tr>`).join('')}</tbody>`;
+}
+function go(id,sub=null,liveTab='orders'){
+ setActive(id,sub);
+ document.getElementById('content').innerHTML =
+   id==='dashboard' ? renderDashboard() :
+   (id==='daily' && sub==='live') ? renderLiveOrders(liveTab) :
+   genericPage(id,sub);
+ if(id!=='dashboard' && window.innerWidth<760) document.getElementById('sidebar').classList.remove('mobile-open');
+}
+function openCreate(title,label){
+ document.getElementById('modalTitle').textContent=label+' • '+title;
+ document.getElementById('modalBody').innerHTML=`<div class="form-grid">
+   <div class="field"><label>Name / Reference</label><input placeholder="Enter ${label.toLowerCase()} name"></div>
+   <div class="field"><label>Status</label><select><option>Active</option><option>Pending</option><option>Draft</option></select></div>
+   <div class="field"><label>Notes</label><input placeholder="Optional notes"></div>
+   <div class="field"><label>Amount</label><input placeholder="₹ 0"></div>
+ </div>`;
+ document.getElementById('modal').classList.add('open');
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+function filterTable(q){q=(q||'').toLowerCase();document.querySelectorAll('#dataTable tbody tr').forEach(r=>r.style.display=r.innerText.toLowerCase().includes(q)?'':'none')}
+renderNav(); go('dashboard');
+</script>
+</body>
+</html>
