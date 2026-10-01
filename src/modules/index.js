@@ -1,0 +1,11 @@
+export { dashboard } from "./dashboard/index.js";
+export { dailyOperations } from "./daily-operations/index.js";
+export { menuManagement } from "./menu-management/index.js";
+export { inventory } from "./inventory/index.js";
+export { marketing } from "./marketing/index.js";
+export { finance } from "./finance/index.js";
+export { reports } from "./reports/index.js";
+export { management } from "./management/index.js";
+export { crm } from "./crm/index.js";
+export { aggregatorCenter } from "./aggregator-center/index.js";
+export { quickLinks } from "./quick-links/index.js";
