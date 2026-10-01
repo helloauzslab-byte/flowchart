@@ -99,6 +99,52 @@ tr:hover td{background:#fafbfc}
 
 @media(max-width:1000px){.sidebar{width:220px;min-width:220px}.kpis{grid-template-columns:repeat(3,1fr)}.dashboard-grid,.two-col{grid-template-columns:1fr}.quick-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:760px){.sidebar{position:fixed;left:-270px;top:0;bottom:0;z-index:10;box-shadow:12px 0 40px rgba(0,0,0,.12)}.sidebar.mobile-open{left:0}.content{padding:14px}.kpis{grid-template-columns:repeat(2,1fr)}.three-col{grid-template-columns:1fr}.topbar{padding:0 12px}.status{display:none}}
+
+
+/* Live Orders visual refinement - based on supplied reference screenshots */
+.exact-live-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+.live-title-row{display:flex;align-items:center;gap:18px}
+.exact-live-head h1{font-size:20px;line-height:1;margin:0;font-weight:650;letter-spacing:-.02em}
+.exact-live-tabs{display:flex;border:1px solid #d7dde4;border-radius:10px;overflow:hidden;background:#fff;height:44px}
+.exact-live-tabs button{height:44px;padding:0 17px;border:0;background:#fff;color:#4b535c;font-size:14px;font-weight:500}
+.exact-live-tabs button+button{border-left:1px solid #d7dde4}
+.exact-live-tabs button.active{background:#edf4ff;color:#1f69e8;font-weight:650}
+.exact-refresh{height:42px;padding:0 17px;border-radius:10px;font-size:13px;font-weight:600}
+.refresh-arrow{font-size:23px;line-height:0;display:inline-block;margin-right:7px;vertical-align:-2px}
+.exact-live-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.exact-live-card{padding:0;overflow:hidden;border:1px solid #e1e4e8;box-shadow:none;border-radius:12px;background:#fff}
+.exact-card-title{display:flex;align-items:center;gap:11px;padding:31px 30px 20px}
+.exact-card-title h3{margin:0;font-size:18px;font-weight:650}
+.exact-blue-dot{width:19px;height:19px;border-radius:50%;background:#e7f1ff;position:relative}
+.exact-blue-dot:after{content:"";position:absolute;inset:5px;border-radius:50%;background:#4a8df0}
+.exact-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:4px 30px 25px}
+.exact-stat{background:#fafafa;border-radius:10px;text-align:center;padding:18px 10px 17px}
+.exact-stat span{display:block;color:#59616b;font-size:12px;margin-bottom:9px}
+.exact-stat strong{display:block;color:#0e1115;font-size:28px;font-weight:450;letter-spacing:-.02em}
+.exact-list{border-top:1px solid #eceef1}
+.exact-row{height:97px;display:flex;align-items:center;padding:0 30px;border-bottom:1px solid #e6e8eb;gap:17px}
+.exact-row:last-child{border-bottom:0}
+.exact-row-icon{width:44px;height:44px;border-radius:10px;background:#efeff0;display:grid;place-items:center;color:#70757b;font-size:20px;flex:0 0 44px}
+.exact-row-copy{display:flex;flex-direction:column;gap:4px}
+.exact-row-copy b{font-size:14px;font-weight:500}
+.exact-row-copy span{font-size:12px;color:#56606a}
+.exact-row>strong{margin-left:auto;font-size:13px;font-weight:650}
+.exact-running-tables{min-height:690px}
+.exact-table-kpis{display:flex;gap:24px}
+.exact-table-kpi{width:320px;padding:25px 20px;display:flex;align-items:center;gap:18px;box-shadow:none;border:0;border-radius:12px}
+.exact-table-icon{width:44px;height:44px;border-radius:10px;background:#eeeeef;display:grid;place-items:center;color:#666d74;font-size:22px}
+.exact-table-kpi strong{display:block;font-size:29px;font-weight:450;line-height:1.05}
+.exact-table-kpi span{display:block;font-size:12px;color:#4d5660;margin-top:5px}
+.exact-table-empty{min-height:515px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+.exact-empty-icon{width:68px;height:68px;border-radius:50%;background:#f0f0f1;display:grid;place-items:center;font-size:30px;color:#5f666e;margin-bottom:20px}
+.exact-table-empty h3{margin:0 0 8px;font-size:16px;font-weight:650;color:#171a1f}
+.exact-table-empty p{margin:0;font-size:12px;color:#626b75}
+@media(max-width:850px){
+  .live-title-row{align-items:flex-start;flex-direction:column;gap:12px}
+  .exact-live-grid{grid-template-columns:1fr}
+  .exact-table-kpis{flex-direction:column}.exact-table-kpi{width:100%}
+}
+
 </style>
 </head>
 <body>
@@ -299,63 +345,61 @@ quick:{favorite:'Favourite Pages',shortcuts:'Shortcuts',customlinks:'Custom Link
 
 
 function renderLiveOrders(tab='orders'){
-  const activeOrders = tab==='orders';
+  const activeOrders = tab === 'orders';
   return `
-    <div class="page-head live-orders-head">
-      <div>
+    <div class="page-head live-orders-head exact-live-head">
+      <div class="live-title-row">
         <h1>Live Orders</h1>
-        <div class="live-tabs">
-          <button class="${activeOrders?'active':''}" onclick="go('daily','live','orders')">Running Orders</button>
-          <button class="${!activeOrders?'active':''}" onclick="go('daily','live','tables')">Running Tables</button>
+        <div class="live-tabs exact-live-tabs">
+          <button class="${activeOrders ? 'active' : ''}" onclick="go('daily','live','orders')">Running Orders</button>
+          <button class="${!activeOrders ? 'active' : ''}" onclick="go('daily','live','tables')">Running Tables</button>
         </div>
       </div>
-      <div class="actions">
-        <button class="btn" onclick="toast('Live Orders refreshed')">↻ &nbsp; Refresh</button>
-      </div>
+      <button class="btn exact-refresh" onclick="toast('Live Orders refreshed')"><span class="refresh-arrow">↻</span> Refresh</button>
     </div>
 
     ${activeOrders ? `
-    <div class="live-order-grid">
-      <section class="card live-panel">
-        <div class="live-panel-title"><span class="live-title-dot"></span><h3>Running Orders</h3></div>
-        <div class="live-summary-grid">
-          <div class="live-summary"><span>Total Order</span><strong>0</strong></div>
-          <div class="live-summary"><span>Total Amount</span><strong>₹ 0.00</strong></div>
-        </div>
-        <div class="live-channel-list">
-          <div class="live-channel-row"><div class="live-type-icon">🍴</div><div><b>Dine in</b><small>0 orders</small></div><strong>₹ 0.00</strong></div>
-          <div class="live-channel-row"><div class="live-type-icon">▣</div><div><b>Pick up</b><small>0 orders</small></div><strong>₹ 0.00</strong></div>
-          <div class="live-channel-row"><div class="live-type-icon">▱</div><div><b>Delivery</b><small>0 orders</small></div><strong>₹ 0.00</strong></div>
-        </div>
-      </section>
+      <div class="exact-live-grid">
+        <section class="card exact-live-card">
+          <div class="exact-card-title"><span class="exact-blue-dot"></span><h3>Running Orders</h3></div>
+          <div class="exact-stat-grid">
+            <div class="exact-stat"><span>Total Order</span><strong>0</strong></div>
+            <div class="exact-stat"><span>Total Amount</span><strong>₹ 0.00</strong></div>
+          </div>
+          <div class="exact-list">
+            <div class="exact-row"><div class="exact-row-icon">🍴</div><div class="exact-row-copy"><b>Dine in</b><span>0 orders</span></div><strong>₹ 0.00</strong></div>
+            <div class="exact-row"><div class="exact-row-icon">▣</div><div class="exact-row-copy"><b>Pick up</b><span>0 orders</span></div><strong>₹ 0.00</strong></div>
+            <div class="exact-row"><div class="exact-row-icon">▱</div><div class="exact-row-copy"><b>Delivery</b><span>0 orders</span></div><strong>₹ 0.00</strong></div>
+          </div>
+        </section>
 
-      <section class="card live-panel">
-        <div class="live-panel-title"><span class="live-title-dot"></span><h3>Pending Orders</h3></div>
-        <div class="live-summary-grid">
-          <div class="live-summary"><span>Total Orders</span><strong>0</strong></div>
-          <div class="live-summary"><span>Total Amount</span><strong>₹ 0.00</strong></div>
-        </div>
-        <div class="live-channel-list">
-          <div class="live-channel-row"><div class="live-type-icon">♨</div><div><b>In Preparation</b><small>0 orders</small></div><strong>₹ 0.00</strong></div>
-          <div class="live-channel-row"><div class="live-type-icon">▣</div><div><b>Waiting For Pickup</b><small>0 orders</small></div><strong>₹ 0.00</strong></div>
-          <div class="live-channel-row"><div class="live-type-icon">▱</div><div><b>Out For Delivery</b><small>0 orders</small></div><strong>₹ 0.00</strong></div>
-        </div>
-      </section>
-    </div>
+        <section class="card exact-live-card">
+          <div class="exact-card-title"><span class="exact-blue-dot"></span><h3>Pending Orders</h3></div>
+          <div class="exact-stat-grid">
+            <div class="exact-stat"><span>Total Orders</span><strong>0</strong></div>
+            <div class="exact-stat"><span>Total Amount</span><strong>₹ 0.00</strong></div>
+          </div>
+          <div class="exact-list">
+            <div class="exact-row"><div class="exact-row-icon">♨</div><div class="exact-row-copy"><b>In Preparation</b><span>0 orders</span></div><strong>₹ 0.00</strong></div>
+            <div class="exact-row"><div class="exact-row-icon">▣</div><div class="exact-row-copy"><b>Waiting For Pickup</b><span>0 orders</span></div><strong>₹ 0.00</strong></div>
+            <div class="exact-row"><div class="exact-row-icon">▱</div><div class="exact-row-copy"><b>Out For Delivery</b><span>0 orders</span></div><strong>₹ 0.00</strong></div>
+          </div>
+        </section>
+      </div>
     ` : `
-    <div class="running-tables-wrap">
-      <div class="running-table-kpis">
-        <div class="card table-kpi"><div class="table-kpi-icon">⌁</div><div><strong>0</strong><span>Active Tables</span></div></div>
-        <div class="card table-kpi"><div class="table-kpi-icon">⌁</div><div><strong>₹ 0</strong><span>Revenue (Estimated)</span></div></div>
+      <div class="exact-running-tables">
+        <div class="exact-table-kpis">
+          <div class="card exact-table-kpi"><div class="exact-table-icon">⌁</div><div><strong>0</strong><span>Active Tables</span></div></div>
+          <div class="card exact-table-kpi"><div class="exact-table-icon">⌁</div><div><strong>₹ 0</strong><span>Revenue (Estimated)</span></div></div>
+        </div>
+        <div class="exact-table-empty">
+          <div class="exact-empty-icon">⌁</div>
+          <h3>No active tables</h3>
+          <p>Tables will appear here when orders start.</p>
+        </div>
       </div>
-      <div class="table-empty">
-        <div class="empty-table-icon">⌁</div>
-        <h3>No active tables</h3>
-        <p>Tables will appear here when orders start.</p>
-      </div>
-    </div>
     `}
-    <div class="live-ai"><div class="ai-help"><span>Ask me about sales or reports. ✨</span><button onclick="toast('AI Agent opened')">✦ AI Agent</button></div></div>
+    <div class="ai-help"><span>Ask me about sales or reports. ✨</span><button onclick="toast('AI Agent opened')">✦ AI Agent</button></div>
   `;
 }
 
